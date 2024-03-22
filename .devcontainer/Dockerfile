@@ -1,19 +1,12 @@
-# See here for image contents: https://github.com/microsoft/vscode-dev-containers/tree/v0.245.2/containers/codespaces-linux/.devcontainer/base.Dockerfile
+FROM alpine:latest 
 
-FROM mcr.microsoft.com/vscode/devcontainers/universal:2-focal
+ARG KIND_VERSION=0.14.0
 
-# [Optional] Uncomment this section to install additional OS packages.
-# RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
-# #     && apt-get -y install --no-install-recommends <your-package-list-here>
-# RUN apt-get update && apt-get -y install --no-install-recommends \
-#    python3.8-venv \
-#    gcc 
-ARG USER="codespace"
-ARG VENV_PATH="/home/${USER}/venv"
-# ARG USER="codespace"
-# ARG VENV_PATH="/home/${USER}/venv"
-# COPY requirements.txt /tmp/
-# COPY Makefile /tmp/
-# RUN su $USER -c "/usr/bin/python3 -m venv /home/${USER}/venv" \
-#    && su $USER -c "${VENV_PATH}/bin/pip --disable-pip-version-check --no-cache-dir install -r /tmp/requirements.txt" \
-#    && rm -rf /tmp/requirements.txt 
+RUN apk add --no-cache curl docker-cli
+
+RUN curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
+RUN chmod +x ./kubectl
+RUN mv ./kubectl /usr/local/bin/kubectl
+
+RUN curl -L https://github.com/kubernetes-sigs/kind/releases/download/v${KIND_VERSION}/kind-linux-amd64 -o /usr/local/bin/kind && \
+    chmod +x /usr/local/bin/kind
